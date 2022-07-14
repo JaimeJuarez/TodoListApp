@@ -1,0 +1,130 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+    color: white !important;
+    background-color: #001e44 !important;
+    min-height: 100vh;
+    padding-top: 5%;
+    height: 100%;
+}
+
+hr {
+    width: 90%;
+    margin: 20px;
+}
+
+.todoListCont {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.todoListCont form {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.todo {
+    margin-top: 15px;
+    padding: 5px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    border: 1px solid #ffffff;
+}
+
+.todo li {
+    font-size: 1.3rem;
+    width: 1100%;
+}
+
+.todo-input {
+    width: 50%;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 10px;
+    font-size: 1.3rem;
+}
+
+.todo-container {
+    width: 60%;
+}
+
+.todo-button {
+    width: 3%;
+    background-color: #001e4400;
+    border: 1px solid #001e4400;
+    filter: invert();
+    border-radius: 5px;
+    /* padding: 5px; */
+    margin-top: 10px;
+    font-size: 1.5rem;
+}
+
+.filter-select {
+    width: 42%;
+    height: 60%;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.select {
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.complete-btn {
+    background-color: #001e4400;
+    border: 1px solid #001e4400;
+    filter: invert();
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1.5rem;
+}
+
+.delete-btn {
+    background-color: #001e4400;
+    border: 1px solid #001e4400;
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 1;
+    font-size: 1.5rem;
+}
+
+.delete-btn i {
+    z-index: -10;
+    filter: invert();
+}
+
+.edit-btn {
+    background-color: #001e4400;
+    border: 1px solid #001e4400;
+    filter: invert();
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1.5rem;
+}
+
+.completed {
+    background-color: #156938;
+}
