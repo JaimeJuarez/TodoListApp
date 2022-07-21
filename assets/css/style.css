@@ -97,6 +97,11 @@ hr {
     filter: invert();
     cursor: pointer;
     border-radius: 5px;
+    width: 1px;
+    height: 1px;
+    margin-bottom: 37px;
+    margin-right: 25px;
+    margin-left: 5px;
     font-size: 1.5rem;
 }
 
@@ -106,7 +111,6 @@ hr {
     border-radius: 5px;
     width: 100%;
     height: 100%;
-    cursor: pointer;
     z-index: 1;
     font-size: 1.5rem;
 }
@@ -114,15 +118,41 @@ hr {
 .delete-btn i {
     z-index: -10;
     filter: invert();
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
 }
 
 .edit-btn {
     background-color: #001e4400;
     border: 1px solid #001e4400;
     filter: invert();
-    cursor: pointer;
+    cursor: none;
     border-radius: 5px;
     font-size: 1.5rem;
+}
+
+.edit-btn i {
+    cursor: pointer;
+}
+
+.edit-input {
+    width: 1100%;
+    border: 1px solid #001e4400;
+    background-color: #001e4400;
+    border-radius: 5px;
+    padding: 3px;
+    font-size: 1.3rem;
+    color: white;
+}
+
+.TodoSaveEditBtn {
+    border: 1px solid #001e4400;
+    color: white !important;
+    padding: 5px;
+    background-color: #001e4400;
 }
 
 .completed {

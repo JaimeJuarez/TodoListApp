@@ -5,7 +5,7 @@
 const todobar = document.querySelector('.todo-input');
 const todoButton = document.querySelector('.todo-button');
 const todolist = document.querySelector('.todo-list');
-const filterOption = document.querySelector('.filter-todo');
+const filterOption = document.querySelector('.filter-select');
 let todos;
 
 //////////////////////////////
@@ -13,56 +13,120 @@ let todos;
 //////////////////////////////
 const addTodo = (event) => {
     event.preventDefault();
-    const todoDiv = document.createElement('div');
-    const todoCompleted = document.createElement('button');
-    const edit = document.createElement('button');
-    const todoli = document.createElement('li');
-    const todoDelete = document.createElement('button');
-    todos.forEach(element => {
-        if (todoli.innerText === element) {
-            alert("La tarea ya existe");
-        } else {
 
-            todoCompleted.innerHTML = '<i class="fas fa-check"></i>';
-            todoCompleted.classList.add("complete-btn");
-            todoDiv.appendChild(todoCompleted);
+    if (todos.includes(todobar.value)) {
+        alert("La tarea ya existe");
+    } else if (!todos.includes(todobar.value)) {
+        const todoDiv = document.createElement('div');
 
-            todoli.innerHTML = todobar.value;
-            todoDiv.classList.add('todo');
-            todoDiv.appendChild(todoli);
+        const todoCompleted = document.createElement('button');
+        todoCompleted.innerHTML = '<i class="fas fa-check"></i>';
+        todoCompleted.classList.add("complete-btn");
+        todoDiv.appendChild(todoCompleted);
 
+        const todoli = document.createElement('li');
+        todoli.innerHTML = todobar.value;
+        todoDiv.classList.add('todo');
+        todoDiv.appendChild(todoli);
 
+        const edit = document.createElement('button');
+        edit.innerHTML = '<i class="fa-solid fa-pen"></i>';
+        edit.classList.add("edit-btn");
+        todoDiv.appendChild(edit);
 
-            edit.innerHTML = '<i class="fa-solid fa-pen"></i>';
-            edit.classList.add("edit-btn");
-            todoDiv.appendChild(edit);
-
-
-            todoDelete.innerHTML = '<i class="fas fa-trash"></i>';
-            todoDelete.classList.add("delete-btn");
-            todoDiv.appendChild(todoDelete);
-            todolist.appendChild(todoDiv);
-
-
-        }
-    });
-    SaveTodoLocalStorage(todobar.value);
+        const todoDelete = document.createElement('button');
+        todoDelete.innerHTML = '<i class="fas fa-trash"></i>';
+        todoDelete.classList.add("delete-btn");
+        todoDiv.appendChild(todoDelete);
+        todolist.appendChild(todoDiv);
+        SaveTodoLocalStorage(todobar.value);
+    }
     todobar.value = '';
 
 }
-const deleteChecked = (e) => {
+
+const CompleteCheked = (e) => {
+    const item = e.target;
     e.preventDefault();
-    if (e.target.classList.contains('fa-trash')) {
-        e.target.parentElement.parentElement.remove();
-        removeTodoLocalStorage(e.target.parentElement.parentElement);
+    if (item.classList.contains('fa-check')) {
+        const todo = item.parentElement.parentElement;
+        console.log(todo);
+        console.log(item);
+        item.classList.remove('fas', 'fa-check');
+        item.classList.add('fa-solid', 'fa-x');
+        todo.classList.add('completed');
+    } else {
+        if (item.classList.contains('fa-x')) {
+            const todo = item.parentElement.parentElement;
+            item.classList.remove('fa-solid', 'fa-x');
+            item.classList.add('fas', 'fa-check');
+            todo.classList.remove('completed');
+        }
     }
 }
 
+//Make a function to make the edit todo
+const editTodo = (e) => {
+    const item = e.target;
+    e.preventDefault();
+    const editInput = document.createElement('input');
+    if (item.classList.contains("fa-pen")) {
+        const todo = item.parentElement.parentElement;
+        console.log(todo);
+        const todoText = todo.children[1].innerText;
+        editInput.classList.add("edit-input");
+        editInput.value = todoText;
+        console.log(editInput);
+        todo.replaceChild(editInput, todo.children[1]);
+        editInput.focus();
+        editInput.addEventListener('blur', () => {
+            todo.replaceChild(todo.children[1], editInput);
+        });
 
+        const todoEditSaveButton = document.createElement('button');
+        todoEditSaveButton.innerHTML = 'Guardar';
+        todoEditSaveButton.classList.add('TodoSaveEditBtn');
+        item.parentElement.parentElement.appendChild(todoEditSaveButton);
+    }
+}
 
-const TodoTaskCompleted = (e) => {
-    if (e.target.classList.contains('complete-btn')) {
-        e.target.parentElement.classList.toggle('completed');
+const SaveEditTodo = (e) => {
+    const item = e.target;
+    e.preventDefault();
+    const oldValueOftext = item.parentElement.children[0].innerText;
+    console.log(item.parentElement.children[1].value);
+    console.log(todos.indexOf(oldValueOftext));
+    console.log(oldValueOftext);
+    if (item.classList.contains('TodoSaveEditBtn')) {
+        const todo = item.parentElement;
+        const todoText = todo.children[1].value;
+        console.log(todoText);
+
+        const todoli = document.createElement('li');
+        todoli.innerHTML = todoText;
+        todo.replaceChild(todoli, todo.children[1]);
+        console.log(item.parentElement);
+        item.parentElement.removeChild(item.parentElement.children[4]);
+        console.log(todos.indexOf(oldValueOftext));
+        console.log(oldValueOftext);
+        // todos.replaceChild(todos.children.indexOf(oldValueOftext), todoText);
+        // SaveTodoLocalStorage(todoText);
+    }
+}
+
+const deleteChecked = (e) => {
+    const item = e.target;
+    e.preventDefault();
+    // console.log(item.classList);
+    if (item.classList.contains('fa-trash')) {
+        const todo = item.parentElement.parentElement;
+        console.log(todo);
+        todo.remove();
+        removeTodoLocalStorage(todo);
+    }
+    if (item.classList.contains("complete-btn")) {
+        const todo = item.parentElement.parentElement;
+        todo.classList.toggle("completed");
     }
 }
 
@@ -71,8 +135,34 @@ const ValidationInputEmpty = (e) => {
         e.preventDefault();
         alert("Ingrese una tarea");
     } else {
-        addTodo(event);
+        addTodo(e);
     }
+}
+
+const filterTodo = (e) => {
+    const todos = todolist.childNodes;
+    console.log(todos);
+    todos.forEach(function(todo) {
+        switch (e.target.value) {
+            case "all":
+                todo.style.display = "flex";
+                break;
+            case "completed":
+                if (todo.classList.contains("completed")) {
+                    todo.style.display = "flex";
+                } else {
+                    todo.style.display = "none";
+                }
+                break;
+            case "uncompleted":
+                if (!todo.classList.contains("completed")) {
+                    todo.style.display = "flex";
+                } else {
+                    todo.style.display = "none";
+                }
+                break;
+        }
+    });
 }
 
 const SaveTodoLocalStorage = (todo) => {
@@ -115,7 +205,6 @@ const getTodoLocalStorage = () => {
         todoDiv.appendChild(todoDelete);
         todolist.appendChild(todoDiv);
     })
-    console.log(todos);
 }
 
 const removeTodoLocalStorage = (todo) => {
@@ -126,7 +215,7 @@ const removeTodoLocalStorage = (todo) => {
         }
         const todoIndex = todo.children[1].innerText;
         console.log(todos.indexOf(todoIndex));
-        console.log(todo);
+        console.log(todoIndex);
         todos.splice(todos.indexOf(todoIndex), 1);
         localStorage.setItem("todos", JSON.stringify(todos));
     }
@@ -136,3 +225,7 @@ const removeTodoLocalStorage = (todo) => {
 document.addEventListener('DOMContentLoaded', getTodoLocalStorage);
 todoButton.addEventListener('click', ValidationInputEmpty);
 todolist.addEventListener('click', deleteChecked);
+todolist.addEventListener('click', SaveEditTodo);
+todolist.addEventListener('click', editTodo);
+todolist.addEventListener('click', CompleteCheked);
+filterOption.addEventListener('click', filterTodo);
