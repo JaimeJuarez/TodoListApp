@@ -6,6 +6,7 @@ const todobar = document.querySelector('.todo-input');
 const todoButton = document.querySelector('.todo-button');
 const todolist = document.querySelector('.todo-list');
 const filterOption = document.querySelector('.filter-select');
+var oldValueOftext;
 let todos;
 
 //////////////////////////////
@@ -13,7 +14,6 @@ let todos;
 //////////////////////////////
 const addTodo = (event) => {
     event.preventDefault();
-
     if (todos.includes(todobar.value)) {
         alert("La tarea ya existe");
     } else if (!todos.includes(todobar.value)) {
@@ -40,8 +40,8 @@ const addTodo = (event) => {
         todoDiv.appendChild(todoDelete);
         todolist.appendChild(todoDiv);
         SaveTodoLocalStorage(todobar.value);
+        todobar.value = '';
     }
-    todobar.value = '';
 
 }
 
@@ -72,11 +72,10 @@ const editTodo = (e) => {
     const editInput = document.createElement('input');
     if (item.classList.contains("fa-pen")) {
         const todo = item.parentElement.parentElement;
-        console.log(todo);
         const todoText = todo.children[1].innerText;
+        oldValueOftext = todoText;
         editInput.classList.add("edit-input");
         editInput.value = todoText;
-        console.log(editInput);
         todo.replaceChild(editInput, todo.children[1]);
         editInput.focus();
         editInput.addEventListener('blur', () => {
@@ -87,30 +86,32 @@ const editTodo = (e) => {
         todoEditSaveButton.innerHTML = 'Guardar';
         todoEditSaveButton.classList.add('TodoSaveEditBtn');
         item.parentElement.parentElement.appendChild(todoEditSaveButton);
+        item.parentElement.parentElement.children[2].style.display = "none";
     }
 }
 
 const SaveEditTodo = (e) => {
     const item = e.target;
     e.preventDefault();
-    const oldValueOftext = item.parentElement.children[0].innerText;
-    console.log(item.parentElement.children[1].value);
-    console.log(todos.indexOf(oldValueOftext));
-    console.log(oldValueOftext);
     if (item.classList.contains('TodoSaveEditBtn')) {
+        // console.log(item.parentElement.children[1].value);
+        // console.log(todos.indexOf(oldValueOftext));
         const todo = item.parentElement;
         const todoText = todo.children[1].value;
-        console.log(todoText);
 
         const todoli = document.createElement('li');
         todoli.innerHTML = todoText;
         todo.replaceChild(todoli, todo.children[1]);
-        console.log(item.parentElement);
         item.parentElement.removeChild(item.parentElement.children[4]);
-        console.log(todos.indexOf(oldValueOftext));
-        console.log(oldValueOftext);
-        // todos.replaceChild(todos.children.indexOf(oldValueOftext), todoText);
-        // SaveTodoLocalStorage(todoText);
+        todo.children[2].style.display = "block";
+        console.log(todos);
+        const TodoOldValueIndex = todos.indexOf(oldValueOftext);
+
+        if (TodoOldValueIndex !== -1) {
+            todos[TodoOldValueIndex] = todoText;
+            console.log(todos);
+        }
+        localStorage.setItem('todos', JSON.stringify(todos));
     }
 }
 
