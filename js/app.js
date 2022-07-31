@@ -7,7 +7,11 @@ const todoButton = document.querySelector('.todo-button');
 const todolist = document.querySelector('.todo-list');
 const filterOption = document.querySelector('.filter-select');
 var oldValueOftext;
-let todos;
+let todos = [{
+    id: 1,
+    title: null,
+    completed: false
+}]
 
 //////////////////////////////
 //      Functions         //
@@ -39,7 +43,11 @@ const addTodo = (event) => {
         todoDelete.classList.add("delete-btn");
         todoDiv.appendChild(todoDelete);
         todolist.appendChild(todoDiv);
-        SaveTodoLocalStorage(todobar.value);
+        SaveTodoLocalStorage({
+            id: todos.length + 1,
+            title: todobar.value,
+            completed: false
+        });
         todobar.value = '';
     }
 
@@ -55,12 +63,20 @@ const CompleteCheked = (e) => {
         item.classList.remove('fas', 'fa-check');
         item.classList.add('fa-solid', 'fa-x');
         todo.classList.add('completed');
+        //check the value of completed as true
+        console.log(todo.children[1].innerText);
+        console.log(todos.findIndex(index => index.title == (todo.children[1].innerText)));
+        todos[todos.findIndex(index => index.title == (todo.children[1].innerText))].completed = true;
+        localStorage.setItem('todos', JSON.stringify(todos));
     } else {
         if (item.classList.contains('fa-x')) {
             const todo = item.parentElement.parentElement;
             item.classList.remove('fa-solid', 'fa-x');
             item.classList.add('fas', 'fa-check');
             todo.classList.remove('completed');
+            todos[todos.findIndex(index => index.title == (todo.children[1].innerText))].completed = false;
+            console.log(todos);
+            localStorage.setItem('todos', JSON.stringify(todos));
         }
     }
 }
@@ -104,11 +120,12 @@ const SaveEditTodo = (e) => {
         todo.replaceChild(todoli, todo.children[1]);
         item.parentElement.removeChild(item.parentElement.children[4]);
         todo.children[2].style.display = "block";
+        console.log(todo);
         console.log(todos);
-        const TodoOldValueIndex = todos.indexOf(oldValueOftext);
-
+        console.log(oldValueOftext);
+        const TodoOldValueIndex = todos.findIndex(index => index.title == oldValueOftext);
         if (TodoOldValueIndex !== -1) {
-            todos[TodoOldValueIndex] = todoText;
+            todos[TodoOldValueIndex].title = todoText;
             console.log(todos);
         }
         localStorage.setItem('todos', JSON.stringify(todos));
@@ -186,12 +203,21 @@ const getTodoLocalStorage = () => {
     }
     todos.forEach(todo => {
         const todoDiv = document.createElement('div');
-        const todoli = document.createElement('li');
-        todoli.innerHTML = todo;
         const todoCompleted = document.createElement('button');
-        todoCompleted.innerHTML = '<i class="fas fa-check"></i>';
-        todoCompleted.classList.add("complete-btn");
-        todoDiv.appendChild(todoCompleted);
+        if (todo.completed === true) {
+            todoDiv.classList.add("completed");
+            todoCompleted.innerHTML = '<i class="fas fa-x"></i>';
+            todoCompleted.classList.add("complete-btn");
+            todoDiv.appendChild(todoCompleted);
+
+        } else {
+            todoDiv.classList.remove("completed");
+            todoCompleted.innerHTML = '<i class="fas fa-check"></i>';
+            todoCompleted.classList.add("complete-btn");
+            todoDiv.appendChild(todoCompleted);
+        }
+        const todoli = document.createElement('li');
+        todoli.innerHTML = todo.title;
         todoDiv.classList.add('todo');
         todoDiv.appendChild(todoli);
 
@@ -205,24 +231,27 @@ const getTodoLocalStorage = () => {
         todoDelete.classList.add("delete-btn");
         todoDiv.appendChild(todoDelete);
         todolist.appendChild(todoDiv);
+
+
     })
 }
 
 const removeTodoLocalStorage = (todo) => {
-        if (!localStorage.getItem("todos")) {
-            todos = [];
-        } else {
-            todos = JSON.parse(localStorage.getItem("todos"));
-        }
-        const todoIndex = todo.children[1].innerText;
-        console.log(todos.indexOf(todoIndex));
-        console.log(todoIndex);
-        todos.splice(todos.indexOf(todoIndex), 1);
-        localStorage.setItem("todos", JSON.stringify(todos));
+    if (!localStorage.getItem("todos")) {
+        todos = [];
+    } else {
+        todos = JSON.parse(localStorage.getItem("todos"));
     }
-    //////////////////////////////
-    //      Event Listeners    //
-    //////////////////////////////
+    const todoIndex = todo.children[1].innerText;
+    console.log(todos.findIndex(index => index.title === todoIndex));
+    console.log(todoIndex);
+    todos.splice(todos.findIndex(index => index.title === todoIndex), 1);
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+//////////////////////////////
+//      Event Listeners    //
+//////////////////////////////
 document.addEventListener('DOMContentLoaded', getTodoLocalStorage);
 todoButton.addEventListener('click', ValidationInputEmpty);
 todolist.addEventListener('click', deleteChecked);
@@ -230,3 +259,33 @@ todolist.addEventListener('click', SaveEditTodo);
 todolist.addEventListener('click', editTodo);
 todolist.addEventListener('click', CompleteCheked);
 filterOption.addEventListener('click', filterTodo);
+
+
+
+
+////Prueba
+
+
+
+
+document.getElementById('BtnPelis').addEventListener('click', (e) => {
+    document.getElementById('InfoPeliculas').innerHTML = "";
+    fetch('http://localhost:1339/api/peliculas', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(response => v = response)
+        .then(() =>
+            v.forEach(element => {
+                document.getElementById('InfoPeliculas').innerHTML += `
+        <div>
+          <p>${element.Nombre}</p>
+          <p>${element.Autor}</p>
+          <p>${element.FechaPub}</p>
+        </div>`
+            })
+        )
+});
