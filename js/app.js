@@ -7,15 +7,23 @@ const todoButton = document.querySelector('.todo-button');
 const todolist = document.querySelector('.todo-list');
 const filterOption = document.querySelector('.filter-select');
 var oldValueOftext;
-let todos = [{
-    id: 1,
-    title: null,
-    completed: false
-}]
+let todos;
 
 //////////////////////////////
 //      Functions         //
 //////////////////////////////
+
+
+async function getDataBaseTodos() {
+    const response = await fetch('http://127.0.0.1:3000/task');
+    const data = await response.json();
+    return data;
+}
+getDataBaseTodos().then(data => {
+    todos = data;
+    renderTodo(todos);
+    console.log(todos);
+});
 const addTodo = (event) => {
     event.preventDefault();
     if (todos.includes(todobar.value)) {
@@ -52,12 +60,12 @@ const addTodo = (event) => {
     }
 
 }
-
 const CompleteCheked = (e) => {
     const item = e.target;
     e.preventDefault();
     if (item.classList.contains('fa-check')) {
         const todo = item.parentElement.parentElement;
+        console.log(todos);
         console.log(todo);
         console.log(item);
         item.classList.remove('fas', 'fa-check');
@@ -157,6 +165,49 @@ const ValidationInputEmpty = (e) => {
     }
 }
 
+async function renderTodo(todos) {
+    if (todos == null) {
+        return;
+    } else {
+        console.log(todos);
+        await todos.forEach(todo => {
+            todos.push(todo)
+                // console.log(todo);
+            const todoDiv = document.createElement('div');
+            const todoCompleted = document.createElement('button');
+            if (todo.completed === true) {
+                todoDiv.classList.add("completed");
+                todoCompleted.innerHTML = '<i class="fas fa-x"></i>';
+                todoCompleted.classList.add("complete-btn");
+                todoDiv.appendChild(todoCompleted);
+
+            } else {
+                todoDiv.classList.remove("completed");
+                todoCompleted.innerHTML = '<i class="fas fa-check"></i>';
+                todoCompleted.classList.add("complete-btn");
+                todoDiv.appendChild(todoCompleted);
+            }
+            const todoli = document.createElement('li');
+            todoli.innerHTML = todo.title;
+            todoDiv.classList.add('todo');
+            todoDiv.appendChild(todoli);
+
+            const edit = document.createElement('button');
+            edit.innerHTML = '<i class="fa-solid fa-pen"></i>';
+            edit.classList.add("edit-btn");
+            todoDiv.appendChild(edit);
+
+            const todoDelete = document.createElement('button');
+            todoDelete.innerHTML = '<i class="fas fa-trash"></i>';
+            todoDelete.classList.add("delete-btn");
+            todoDiv.appendChild(todoDelete);
+            todolist.appendChild(todoDiv);
+
+
+        })
+    }
+}
+
 const filterTodo = (e) => {
     const todos = todolist.childNodes;
     console.log(todos);
@@ -194,46 +245,12 @@ const SaveTodoLocalStorage = (todo) => {
     console.log(todos);
 
 }
-
 const getTodoLocalStorage = () => {
     if (!localStorage.getItem('todos')) {
         todos = [];
     } else {
         todos = JSON.parse(localStorage.getItem('todos'));
     }
-    todos.forEach(todo => {
-        const todoDiv = document.createElement('div');
-        const todoCompleted = document.createElement('button');
-        if (todo.completed === true) {
-            todoDiv.classList.add("completed");
-            todoCompleted.innerHTML = '<i class="fas fa-x"></i>';
-            todoCompleted.classList.add("complete-btn");
-            todoDiv.appendChild(todoCompleted);
-
-        } else {
-            todoDiv.classList.remove("completed");
-            todoCompleted.innerHTML = '<i class="fas fa-check"></i>';
-            todoCompleted.classList.add("complete-btn");
-            todoDiv.appendChild(todoCompleted);
-        }
-        const todoli = document.createElement('li');
-        todoli.innerHTML = todo.title;
-        todoDiv.classList.add('todo');
-        todoDiv.appendChild(todoli);
-
-        const edit = document.createElement('button');
-        edit.innerHTML = '<i class="fa-solid fa-pen"></i>';
-        edit.classList.add("edit-btn");
-        todoDiv.appendChild(edit);
-
-        const todoDelete = document.createElement('button');
-        todoDelete.innerHTML = '<i class="fas fa-trash"></i>';
-        todoDelete.classList.add("delete-btn");
-        todoDiv.appendChild(todoDelete);
-        todolist.appendChild(todoDiv);
-
-
-    })
 }
 
 const removeTodoLocalStorage = (todo) => {
@@ -259,33 +276,3 @@ todolist.addEventListener('click', SaveEditTodo);
 todolist.addEventListener('click', editTodo);
 todolist.addEventListener('click', CompleteCheked);
 filterOption.addEventListener('click', filterTodo);
-
-
-
-
-////Prueba
-
-
-
-
-document.getElementById('BtnPelis').addEventListener('click', (e) => {
-    document.getElementById('InfoPeliculas').innerHTML = "";
-    fetch('http://localhost:1339/api/peliculas', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(response => v = response)
-        .then(() =>
-            v.forEach(element => {
-                document.getElementById('InfoPeliculas').innerHTML += `
-        <div>
-          <p>${element.Nombre}</p>
-          <p>${element.Autor}</p>
-          <p>${element.FechaPub}</p>
-        </div>`
-            })
-        )
-});
