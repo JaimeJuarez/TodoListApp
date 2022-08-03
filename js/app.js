@@ -7,26 +7,114 @@ const todoButton = document.querySelector('.todo-button');
 const todolist = document.querySelector('.todo-list');
 const filterOption = document.querySelector('.filter-select');
 var oldValueOftext;
-let todos;
+let todos = [];
+let todotask;
+setTimeout(() => {
+    console.log(todos);
+}, 90);
+//////////////////////////////
+//   Async Functions (Fetch)//
+//////////////////////////////
+
+
+async function getDataBaseTodos() {
+    const response = await fetch('http://127.0.0.1:3000/task', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => task = data)
+        .then(() => {
+            setInterval(() => {
+
+                if (todos.length === 0) {
+                    task.forEach(todo => {
+                        SaveTodoLocalStorage(todo);
+                        console.log('im in');
+                        // const todoli = document.createElement('li');
+                        // todoli.innerHTML = todo.title;
+                        // todoli.classList.add('todo-item');
+                        // todoli.classList.add('completed');
+                        // todolist.appendChild(todoli);
+                        todos.push(todo);
+                        console.log(todo);
+                        console.log(todos);
+                        console.log('im in too');
+                    })
+                }
+            }, 90);
+        })
+        .then(() => console.log(todos))
+        .then(() => getTodoLocalStorage())
+    return response;
+}
+
+// async function postDataBaseTodos(event) {
+//     const data = {
+//         id: todos.length + 1,
+//         title: todobar.value,
+//         completed: false
+//     }
+//     event.preventDefault();
+//     console.log(todos);
+//     if (todos.forEach(todo => todo.title === todobar.value)) {
+//         console.log(todo);
+//         console.log(todobar.value);
+//         alert("La tarea ya existe");
+//     } else if (!todos.includes(todobar.value)) {
+//         const todoDiv = document.createElement('div');
+
+//         const todoCompleted = document.createElement('button');
+//         todoCompleted.innerHTML = '<i class="fas fa-check"></i>';
+//         todoCompleted.classList.add("complete-btn");
+//         todoDiv.appendChild(todoCompleted);
+
+//         const todoli = document.createElement('li');
+//         todoli.innerHTML = todobar.value;
+//         todoDiv.classList.add('todo');
+//         todoDiv.appendChild(todoli);
+
+//         const edit = document.createElement('button');
+//         edit.innerHTML = '<i class="fa-solid fa-pen"></i>';
+//         edit.classList.add("edit-btn");
+//         todoDiv.appendChild(edit);
+
+//         const todoDelete = document.createElement('button');
+//         todoDelete.innerHTML = '<i class="fas fa-trash"></i>';
+//         todoDelete.classList.add("delete-btn");
+//         todoDiv.appendChild(todoDelete);
+//         todolist.appendChild(todoDiv);
+
+//         SaveTodoLocalStorage(data);
+//         todobar.value = '';
+//     }
+//     const response = await fetch('http://127.0.0.1:3000/task', {
+//             method: 'POST',
+//             body: JSON.stringify(data),
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             }
+//         })
+//         .then(res => res.json())
+//     return response;
+// }
+
+
 
 //////////////////////////////
 //      Functions         //
 //////////////////////////////
 
-
-async function getDataBaseTodos() {
-    const response = await fetch('http://127.0.0.1:3000/task');
-    const data = await response.json();
-    return data;
-}
-getDataBaseTodos().then(data => {
-    todos = data;
-    renderTodo(todos);
-    console.log(todos);
-});
 const addTodo = (event) => {
     event.preventDefault();
-    if (todos.includes(todobar.value)) {
+    console.log(todos);
+
+
+    if (todos.forEach(todo => todo.title === todobar.value)) {
+        console.log(todo);
+        console.log(todobar.value);
         alert("La tarea ya existe");
     } else if (!todos.includes(todobar.value)) {
         const todoDiv = document.createElement('div');
@@ -58,8 +146,8 @@ const addTodo = (event) => {
         });
         todobar.value = '';
     }
-
 }
+
 const CompleteCheked = (e) => {
     const item = e.target;
     e.preventDefault();
@@ -169,10 +257,7 @@ async function renderTodo(todos) {
     if (todos == null) {
         return;
     } else {
-        console.log(todos);
         await todos.forEach(todo => {
-            todos.push(todo)
-                // console.log(todo);
             const todoDiv = document.createElement('div');
             const todoCompleted = document.createElement('button');
             if (todo.completed === true) {
@@ -236,13 +321,12 @@ const filterTodo = (e) => {
 
 const SaveTodoLocalStorage = (todo) => {
     if (!localStorage.getItem('todos')) {
-        todos = [];
+        todos = todos;
     } else {
         todos = JSON.parse(localStorage.getItem('todos'));
     }
     todos.push(todo);
     localStorage.setItem('todos', JSON.stringify(todos));
-    console.log(todos);
 
 }
 const getTodoLocalStorage = () => {
@@ -250,29 +334,36 @@ const getTodoLocalStorage = () => {
         todos = [];
     } else {
         todos = JSON.parse(localStorage.getItem('todos'));
+        renderTodo(todos);
+        console.log(todos);
     }
 }
-
 const removeTodoLocalStorage = (todo) => {
-    if (!localStorage.getItem("todos")) {
-        todos = [];
-    } else {
-        todos = JSON.parse(localStorage.getItem("todos"));
+        if (!localStorage.getItem("todos")) {
+            todos = todos;
+        } else {
+            todos = JSON.parse(localStorage.getItem("todos"));
+        }
+        const todoIndex = todo.children[1].innerText;
+        console.log(todos.findIndex(index => index.title === todoIndex));
+        console.log(todoIndex);
+        todos.splice(todos.findIndex(index => index.title === todoIndex), 1);
+        localStorage.setItem("todos", JSON.stringify(todos));
     }
-    const todoIndex = todo.children[1].innerText;
-    console.log(todos.findIndex(index => index.title === todoIndex));
-    console.log(todoIndex);
-    todos.splice(todos.findIndex(index => index.title === todoIndex), 1);
-    localStorage.setItem("todos", JSON.stringify(todos));
-}
-
-//////////////////////////////
-//      Event Listeners    //
-//////////////////////////////
-document.addEventListener('DOMContentLoaded', getTodoLocalStorage);
+    //////////////////////////////
+    //      Event Listeners    //
+    //////////////////////////////
+    // document.addEventListener('DOMContentLoaded', getTodoLocalStorage);
+document.addEventListener('DOMContentLoaded', getDataBaseTodos);
 todoButton.addEventListener('click', ValidationInputEmpty);
 todolist.addEventListener('click', deleteChecked);
 todolist.addEventListener('click', SaveEditTodo);
 todolist.addEventListener('click', editTodo);
 todolist.addEventListener('click', CompleteCheked);
 filterOption.addEventListener('click', filterTodo);
+
+setInterval(() => {
+    if (todos.length === 0) {
+        location.reload();
+    }
+}, 100);
