@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
 
 router.use('/task', task)
 
-router.use(express.static(path.join(__dirname, '../public')));
-router.use(express.static(path.join(__dirname, '../js')));
+router.use(express.static(path.join(__dirname, '../')));
+// router.use(express.static(path.join(__dirname, '../js')));
 
 module.exports = router;

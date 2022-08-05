@@ -1,0 +1,22 @@
+services:
+  web:
+    environment:
+      - MONGODB_URI=mongodb://db:27017/TodoListApp
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8927:3000"
+
+    volumes:
+      - .:/opt/app
+      - /opt/app/node_modules
+  db:
+    image: mongo
+    expose:
+      - "27017"
+      # MONGO_INITDB_DATABASE: container
+    volumes:
+      - mongodata:/data/db
+volumes:
+  mongodata:

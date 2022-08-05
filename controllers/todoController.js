@@ -47,7 +47,7 @@ module.exports = {
 
 
     remove: function(req, res) {
-        todoTask.remove({ title: req.body.titlep }, function(err, task) {
+        todoTask.deleteMany({ title: req.body.title }, function(err, task) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error en la búsqueda de la task a borrar'
@@ -63,7 +63,7 @@ module.exports = {
         var title = req.body.titlep
         todoTask.findOne({ title: title }, function(err, task) {
             if (err) {
-                return res.status(500).json({
+                return res.status(404).json({
                     message: 'Se ha producido un error al guardar la task',
                     error: err
                 })
@@ -75,13 +75,13 @@ module.exports = {
                 })
             }
 
-            task.id = req.body.id
+            // task.id = req.body.id
             task.title = req.body.title
             task.completed = req.body.completed
 
             task.save(function(err, task) {
                 if (err) {
-                    return res.status(500).json({
+                    return res.status(404).json({
                         message: 'Error al guardar la task'
                     })
                 }
